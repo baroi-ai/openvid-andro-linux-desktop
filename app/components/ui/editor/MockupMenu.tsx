@@ -36,7 +36,7 @@ export interface MockupMenuProps {
 }
 
 export function MockupMenu({
-  mockupId = "none",
+  mockupId = "macos-dark-ide",
   mockupConfig,
   onMockupChange,
   onMockupConfigChange,
@@ -45,7 +45,7 @@ export function MockupMenu({
   backgroundTab,
   selectedWallpaper,
   selectedImageUrl,
-  initialPage = "home",
+  initialPage = "detail-2d",
   mediaType = "image",
 }: MockupMenuProps) {
   const t = useTranslations("mockupMenu");

@@ -81,7 +81,9 @@ export function drawVSCodeMockup(context: MockupCanvasContext): MockupDrawResult
     const logoY = y + (headerHeight - logoSize) / 2;
     drawVSCodeLogo(ctx, x + headerPaddingX, logoY, logoSize);
 
-    const menuItems = ["File", "Edit", "Selection", "View", "Go", "Terminal", "Help"];
+    const menuItems = width >= 600 * headerScale
+        ? ["File", "Edit", "Selection", "View", "Go", "Terminal", "Help"]
+        : ["File", "Edit", "Selection"];
     let menuX = x + headerPaddingX + logoSize + 8 * headerScale;
     const menuY = y + headerHeight / 2;
 
@@ -97,34 +99,6 @@ export function drawVSCodeMockup(context: MockupCanvasContext): MockupDrawResult
     });
     ctx.restore();
 
-    const maxSearchWidth = 576 * headerScale; // Equivale a max-w-xl
-    const searchWidth = Math.min(width * 0.5, maxSearchWidth);
-    const searchX = x + (width - searchWidth) / 2;
-    const searchY = y + (headerHeight - searchHeight) / 2;
-
-    const searchBgBase = deriveSearchBg(frameColor);
-
-    ctx.save();
-    drawRoundedRectPath(ctx, searchX, searchY, searchWidth, searchHeight, 4 * headerScale);
-    ctx.fillStyle = hexToRgba(searchBgBase, headerOpacity);
-    ctx.fill();
-    ctx.strokeStyle = searchBorder;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.restore();
-
-    const searchIconSize = searchHeight * 0.6;
-    const searchIconPadding = 8 * headerScale;
-    drawMagnifyIcon(ctx, searchX + searchIconPadding, searchY + (searchHeight - searchIconSize) / 2, searchIconSize, textColor + "80");
-
-    ctx.save();
-    ctx.font = `${searchFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(url, searchX + searchWidth / 2 + searchIconSize / 2, searchY + searchHeight / 2);
-    ctx.restore();
-
     const controlY = y + (headerHeight - controlIconSize) / 2;
     const iconGap = controlPaddingX * 2;
 
@@ -136,6 +110,50 @@ export function drawVSCodeMockup(context: MockupCanvasContext): MockupDrawResult
 
     const closeX = x + width - 1 * (controlIconSize + iconGap);
     drawCloseIcon(ctx, closeX, controlY, controlIconSize, textColor);
+
+    const maxSearchWidth = 576 * headerScale;
+    const searchY = y + (headerHeight - searchHeight) / 2;
+
+    const minSearchX = menuX + 8 * headerScale;
+    const maxSearchRight = minX - 8 * headerScale;
+
+    let searchX = x + (width - Math.min(width * 0.5, maxSearchWidth)) / 2;
+    let searchWidth = Math.min(width * 0.5, maxSearchWidth);
+
+    if (searchX < minSearchX) {
+        searchX = minSearchX;
+    }
+    if (searchX + searchWidth > maxSearchRight) {
+        searchWidth = Math.max(40 * headerScale, maxSearchRight - searchX);
+    }
+
+    if (searchWidth > 30 * headerScale) {
+        const searchBgBase = deriveSearchBg(frameColor);
+
+        ctx.save();
+        drawRoundedRectPath(ctx, searchX, searchY, searchWidth, searchHeight, 4 * headerScale);
+        ctx.fillStyle = hexToRgba(searchBgBase, headerOpacity);
+        ctx.fill();
+        ctx.strokeStyle = searchBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        drawRoundedRectPath(ctx, searchX, searchY, searchWidth, searchHeight, 4 * headerScale);
+        ctx.clip();
+
+        const searchIconSize = searchHeight * 0.6;
+        const searchIconPadding = 8 * headerScale;
+        drawMagnifyIcon(ctx, searchX + searchIconPadding, searchY + (searchHeight - searchIconSize) / 2, searchIconSize, textColor + "80");
+
+        ctx.font = `${searchFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(url, searchX + searchWidth / 2 + searchIconSize / 2, searchY + searchHeight / 2);
+        ctx.restore();
+    }
 
     return {
         contentX: x,

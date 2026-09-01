@@ -53,13 +53,15 @@ export interface MockupRenderProps {
 
 // Default configuration
 export const DEFAULT_MOCKUP_CONFIG: MockupConfig = {
-    darkMode: false,
-    frameColor: "#f6f6f6",
-    url: "https://openvid.dev",
-    headerScale: 60,        // 100% = normal size
+    darkMode: true,
+    frameColor: "#000000",
+    url: "aibazaars.store",
+    headerScale: 83,        // 100% = normal size
     headerOpacity: 100,     // 100% = fully opaque
-    cornerRadius: 12,
+    cornerRadius: 10,
 };
+
+export const DEFAULT_MOCKUP_ID = "macos-dark-ide";
 
 // Default features (no features enabled)
 export const DEFAULT_MOCKUP_FEATURES: MockupFeatures = {

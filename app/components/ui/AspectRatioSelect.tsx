@@ -37,7 +37,7 @@ export function AspectRatioSelect({
 
     const handleOpenChange = (open: boolean) => {
         if (open) {
-            setTempWidth(customDimensions?.width?.toString() || "1920");
+            setTempWidth(customDimensions?.width?.toString() || "500");
             setTempHeight(customDimensions?.height?.toString() || "1080");
         }
         setIsOpen(open);

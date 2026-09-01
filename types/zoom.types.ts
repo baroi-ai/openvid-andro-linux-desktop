@@ -233,26 +233,7 @@ export function createZoomFragment(
 export function generateDefaultZoomFragments(
     videoDuration: number
 ): ZoomFragment[] {
-    if (videoDuration <= 0) return [];
-
-    const fragmentDuration = 3;
-    const spacing = videoDuration / 3;
-
-    const fragments: ZoomFragment[] = [];
-
-    const start1 = Math.max(0, spacing * 0.5);
-    fragments.push(createZoomFragment(
-        start1,
-        Math.min(start1 + fragmentDuration, videoDuration)
-    ));
-
-    const start2 = Math.max(0, spacing * 2);
-    fragments.push(createZoomFragment(
-        start2,
-        Math.min(start2 + fragmentDuration, videoDuration)
-    ));
-
-    return fragments;
+    return [];
 }
 
 

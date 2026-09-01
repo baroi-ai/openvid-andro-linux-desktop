@@ -48,7 +48,11 @@ export function calculateScaledPadding(
 }
 
 export function getAspectRatioStyle(ratio: AspectRatio, customDimensions?: { width: number; height: number }): string {
-    if ((ratio === "custom" || ratio === "auto") && customDimensions) {
+    if (ratio === "custom") {
+        const dims = customDimensions ?? { width: 500, height: 1080 };
+        return `${dims.width}/${dims.height}`;
+    }
+    if (ratio === "auto" && customDimensions) {
         return `${customDimensions.width}/${customDimensions.height}`;
     }
 
@@ -58,13 +62,17 @@ export function getAspectRatioStyle(ratio: AspectRatio, customDimensions?: { wid
         case "1:1": return "1/1";
         case "4:3": return "4/3";
         case "3:4": return "3/4";
-        default: return "16/9";
+        default: return "500/1080";
     }
 }
 
 // Numeric aspect ratio (width / height) for a given AspectRatio setting
 export function getAspectRatioNumber(ratio: AspectRatio, customDimensions?: { width: number; height: number }): number {
-    if ((ratio === "custom" || ratio === "auto") && customDimensions) {
+    if (ratio === "custom") {
+        const dims = customDimensions ?? { width: 500, height: 1080 };
+        return dims.width / dims.height;
+    }
+    if (ratio === "auto" && customDimensions) {
         return customDimensions.width / customDimensions.height;
     }
     switch (ratio) {
@@ -73,7 +81,7 @@ export function getAspectRatioNumber(ratio: AspectRatio, customDimensions?: { wi
         case "1:1": return 1;
         case "4:3": return 4 / 3;
         case "3:4": return 3 / 4;
-        default: return 16 / 9;
+        default: return 500 / 1080;
     }
 }
 

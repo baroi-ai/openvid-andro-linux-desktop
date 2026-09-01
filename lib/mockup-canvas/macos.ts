@@ -19,7 +19,7 @@ export function drawMacosMockup(context: MockupCanvasContext): MockupDrawResult 
 
     const isDark = config.darkMode;
     const frameColor = config.frameColor;
-    const url = config.url || "https://openvid.dev";
+    const url = config.url || "aibazaars.store";
     const headerOpacity = config.headerOpacity ?? 100;
     const headerScale = (config.headerScale || 100) / 100;
 

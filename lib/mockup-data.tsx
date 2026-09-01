@@ -28,7 +28,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -51,7 +51,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -109,7 +109,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -132,7 +132,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -172,7 +172,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -195,7 +195,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -217,7 +217,7 @@ export const MOCKUPS: Mockup[] = [
         },
         defaultConfig: {
             darkMode: false,
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -240,7 +240,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -263,7 +263,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: false,
             frameColor: "#f6f6f6",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 12,
         },
@@ -409,7 +409,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: true,
             frameColor: "#1e1e1e",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 8,
         },
@@ -431,10 +431,11 @@ export const MOCKUPS: Mockup[] = [
         },
         defaultConfig: {
             darkMode: true,
-            frameColor: "#1e1e1e",
-            url: "https://openvid.dev",
-            headerScale: 60,
-            cornerRadius: 8,
+            frameColor: "#000000",
+            url: "aibazaars.store",
+            headerScale: 83,
+            headerOpacity: 100,
+            cornerRadius: 10,
         },
         preview: (
             <MacosDarkPreview />
@@ -455,7 +456,7 @@ export const MOCKUPS: Mockup[] = [
         defaultConfig: {
             darkMode: true,
             frameColor: "#1e1e1e",
-            url: "https://openvid.dev",
+            url: "aibazaars.store",
             headerScale: 60,
             cornerRadius: 8,
         },

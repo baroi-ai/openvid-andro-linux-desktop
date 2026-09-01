@@ -16,6 +16,7 @@ import { ElementsMenu } from "./ElementsMenu";
 import { TooltipAction } from "@/components/ui/tooltip-action";
 import { CameraMenu } from "./CameraMenu";
 import { useMockup3dContext } from "@/app/contexts/Mockup3dContext";
+import { AspectRatioSelect } from "../AspectRatioSelect";
 
 const BackgroundColorEditor = lazy(() => import("../BackgroundColorEditor").then(mod => ({ default: mod.BackgroundColorEditor })));
 const ZoomFragmentEditor = lazy(() => import("./ZoomFragmentEditor").then(mod => ({ default: mod.ZoomFragmentEditor })));
@@ -48,6 +49,10 @@ export function ControlPanel({
     selectedImageUrl,
     backgroundColorConfig,
     backgroundColorCss,
+    aspectRatio,
+    onAspectRatioChange,
+    customDimensions,
+    onCustomDimensionsChange,
     onBackgroundTabChange,
     onWallpaperSelect,
     wallpaperShowAll = false,
@@ -269,6 +274,97 @@ export function ControlPanel({
                                 <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-1.5">
                                     <span>{t("screenshot.settings")}</span>
                                 </div>
+
+                                {onAspectRatioChange && (
+                                    <div className="flex flex-col gap-2.5 p-3 bg-muted/40 rounded-xl border border-border/50">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 shrink-0">
+                                                <Icon icon="mynaui:layout" width="16" />
+                                                Ratio / Canvas
+                                            </span>
+                                            <AspectRatioSelect
+                                                value={aspectRatio || "auto"}
+                                                onChange={onAspectRatioChange}
+                                                customDimensions={customDimensions}
+                                                onCustomDimensionsChange={onCustomDimensionsChange}
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-muted-foreground">W</span>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="7680"
+                                                    placeholder="500"
+                                                    value={
+                                                        aspectRatio === "custom" && customDimensions
+                                                            ? customDimensions.width
+                                                            : (aspectRatio === "16:9" ? 1920
+                                                              : aspectRatio === "9:16" ? 1080
+                                                              : aspectRatio === "1:1" ? 1080
+                                                              : aspectRatio === "4:3" ? 1440
+                                                              : aspectRatio === "3:4" ? 1080
+                                                              : customDimensions?.width || 500)
+                                                    }
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        if (val > 0 && onCustomDimensionsChange) {
+                                                            const currentH = aspectRatio === "custom" && customDimensions
+                                                                ? customDimensions.height
+                                                                : (aspectRatio === "16:9" ? 1080
+                                                                  : aspectRatio === "9:16" ? 1920
+                                                                  : aspectRatio === "1:1" ? 1080
+                                                                  : aspectRatio === "4:3" ? 1080
+                                                                  : aspectRatio === "3:4" ? 1440
+                                                                  : customDimensions?.height || 1080);
+                                                            onCustomDimensionsChange({ width: val, height: currentH });
+                                                            onAspectRatioChange?.("custom");
+                                                        }
+                                                    }}
+                                                    className="w-full h-7 pl-6 pr-2 text-xs border border-input bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                                                />
+                                            </div>
+                                            <span className="text-xs text-muted-foreground font-mono">×</span>
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-muted-foreground">H</span>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="4320"
+                                                    placeholder="1080"
+                                                    value={
+                                                        aspectRatio === "custom" && customDimensions
+                                                            ? customDimensions.height
+                                                            : (aspectRatio === "16:9" ? 1080
+                                                              : aspectRatio === "9:16" ? 1920
+                                                              : aspectRatio === "1:1" ? 1080
+                                                              : aspectRatio === "4:3" ? 1080
+                                                              : aspectRatio === "3:4" ? 1440
+                                                              : customDimensions?.height || 1080)
+                                                    }
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        if (val > 0 && onCustomDimensionsChange) {
+                                                            const currentW = aspectRatio === "custom" && customDimensions
+                                                                ? customDimensions.width
+                                                                : (aspectRatio === "16:9" ? 1920
+                                                                  : aspectRatio === "9:16" ? 1080
+                                                                  : aspectRatio === "1:1" ? 1080
+                                                                  : aspectRatio === "4:3" ? 1440
+                                                                  : aspectRatio === "3:4" ? 1080
+                                                                  : customDimensions?.width || 500);
+                                                            onCustomDimensionsChange({ width: currentW, height: val });
+                                                            onAspectRatioChange?.("custom");
+                                                        }
+                                                    }}
+                                                    className="w-full h-7 pl-6 pr-2 text-xs border border-input bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <SliderControl
                                     icon="mdi:blur"

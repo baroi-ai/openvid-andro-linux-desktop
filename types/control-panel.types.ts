@@ -1,4 +1,4 @@
-import { BackgroundTab, Tool, VideoThumbnail } from "./editor.types";
+import { BackgroundTab, Tool, VideoThumbnail, AspectRatio } from "./editor.types";
 import { BackgroundColorConfig } from "./background.types";
 import { ZoomFragment, ZoomMovement } from "./zoom.types";
 import { MockupConfig, MenuPage } from "./mockup.types";
@@ -19,6 +19,10 @@ export interface ControlPanelProps {
     selectedImageUrl: string;
     backgroundColorConfig: BackgroundColorConfig | null;
     backgroundColorCss?: string;
+    aspectRatio?: AspectRatio;
+    onAspectRatioChange?: (value: AspectRatio) => void;
+    customDimensions?: { width: number; height: number } | null;
+    onCustomDimensionsChange?: (dimensions: { width: number; height: number }) => void;
     onBackgroundTabChange: (tab: BackgroundTab) => void;
     onWallpaperSelect: (index: number) => void;
     onBackgroundBlurChange: (value: number) => void;

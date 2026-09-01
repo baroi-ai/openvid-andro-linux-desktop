@@ -150,7 +150,7 @@ export default function Editor() {
     const [isMobileControlPanelOpen, setIsMobileControlPanelOpen] = useState(false);
     // Initial page for the MockupMenu when the user clicks a mockup already
     // the menu is collapsed/expanded).
-    const [initialMockupMenuPage, setInitialMockupMenuPage] = useState<MenuPage>("home");
+    const [initialMockupMenuPage, setInitialMockupMenuPage] = useState<MenuPage>("detail-2d");
     // Increments on every handleMockupClick so the MockupMenu re-navigates
     // MockupMenu would not fire).
     const [mockupMenuNavigationToken, setMockupMenuNavigationToken] = useState(0);
@@ -169,9 +169,9 @@ export default function Editor() {
     const [backgroundColorConfig, setBackgroundColorConfig] = useState<BackgroundColorConfig | null>(null);
     const [textToolActive, setTextToolActive] = useState(false);
     // Aspect ratio, fullscreen, and cropper state
-    const [aspectRatio, setAspectRatio] = useState<AspectRatio>("auto");
+    const [aspectRatio, setAspectRatio] = useState<AspectRatio>("custom");
     const [videoDimensions, setVideoDimensions] = useState<{ width: number; height: number } | null>(null);
-    const [customDimensions, setCustomDimensions] = useState<{ width: number; height: number } | null>(null);
+    const [customDimensions, setCustomDimensions] = useState<{ width: number; height: number } | null>({ width: 500, height: 1080 });
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isCropperOpen, setIsCropperOpen] = useState(false);
     const [cropArea, setCropArea] = useState<CropArea | undefined>(undefined);
@@ -249,7 +249,7 @@ export default function Editor() {
     const scrubTimeRef = useRef<number>(0);
 
     // Mockup state
-    const [mockupId, setMockupId] = useState<string>("none");
+    const [mockupId, setMockupId] = useState<string>("macos-dark-ide");
     const [mockupConfig, setMockupConfig] = useState<MockupConfig>(DEFAULT_MOCKUP_CONFIG);
 
     // Whether the currently loaded source video file contains an audio stream
@@ -496,8 +496,8 @@ export default function Editor() {
             setPadding(10);
             setRoundedCorners(15);
             setShadows(10);
-            setAspectRatio("auto");
-            setCustomDimensions(null);
+            setAspectRatio("custom");
+            setCustomDimensions({ width: 500, height: 1080 });
             setCropArea(undefined);
             setMockupId("none");
             setMockupConfig(DEFAULT_MOCKUP_CONFIG);
@@ -1174,7 +1174,9 @@ export default function Editor() {
             setVideoId(uploadedData.videoId);
             setVideoDuration(uploadedData.duration);
             setTrimRange({ start: 0, end: uploadedData.duration });
-            setAspectRatio(uploadedData.aspectRatio);
+            if (aspectRatio !== "custom") {
+                setAspectRatio(uploadedData.aspectRatio);
+            }
             setVideoDimensions({ width: uploadedData.width, height: uploadedData.height });
             const newClip: VideoTrackClip = {
                 id: crypto.randomUUID(),
@@ -1297,7 +1299,6 @@ export default function Editor() {
                     const metadataUrl = URL.createObjectURL(blob);
                     video.onloadedmetadata = () => {
                         setVideoDimensions({ width: video.videoWidth, height: video.videoHeight });
-                        setAspectRatio("auto");
                         URL.revokeObjectURL(metadataUrl);
                     };
                     video.src = metadataUrl;
@@ -1884,8 +1885,8 @@ export default function Editor() {
                         const defaultFragments = generateDefaultZoomFragments(safeLoadDuration);
                         setZoomFragments(defaultFragments);
 
-                        if ('aspectRatio' in videoToLoad) {
-                            setAspectRatio(videoToLoad.aspectRatio || "auto");
+                        if ('aspectRatio' in videoToLoad && videoToLoad.aspectRatio) {
+                            setAspectRatio(videoToLoad.aspectRatio);
                             if (videoToLoad.width && videoToLoad.height) {
                                 setVideoDimensions({ width: videoToLoad.width, height: videoToLoad.height });
                             }
@@ -2861,6 +2862,10 @@ export default function Editor() {
                                         backgroundColorConfig={backgroundColorConfig}
                                         backgroundColorCss={backgroundColorCss}
                                         onBackgroundColorChange={handleBackgroundColorChange}
+                                        aspectRatio={aspectRatio}
+                                        onAspectRatioChange={handleAspectRatioChange}
+                                        customDimensions={customDimensions}
+                                        onCustomDimensionsChange={handleCustomDimensionsChange}
                                         onTogglePanel={() => setIsControlPanelOpen(!isControlPanelOpen)}
                                         isOpen={isControlPanelOpen}
                                         zoomFragments={zoomFragments}

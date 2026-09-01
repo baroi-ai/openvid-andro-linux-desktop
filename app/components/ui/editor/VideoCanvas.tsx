@@ -73,7 +73,7 @@ function VideoCanvasInner({
     getThumbnailForTime,
     zoomFragments = [],
     currentTime = 0,
-    mockupId = "none",
+    mockupId = "macos-dark-ide",
     mockupConfig,
     onVideoUpload,
     onImageUpload,

@@ -71,7 +71,7 @@ const DEFAULT_PROJECT_STATE: ImageProjectState = {
     aspectRatio: "auto",
     customDimensions: null,
     cropArea: undefined,
-    mockupId: "none",
+    mockupId: "macos-dark-ide",
     mockupConfig: DEFAULT_MOCKUP_CONFIG,
     canvasElements: [],
     imageTransform: {

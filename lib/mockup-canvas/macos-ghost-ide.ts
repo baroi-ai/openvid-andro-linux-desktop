@@ -85,9 +85,11 @@ export function drawMacosGhostIdeMockup(context: MockupCanvasContext): MockupDra
         ctx.restore();
     });
 
-    const menuItems = ["File", "Edit", "Selection", "View", "Go"];
-    const dotsEndX = dotsStartX + 3 * dotSize + 2 * dotGap + menuPaddingX * 2;
-    let menuX = dotsEndX;
+    const menuItems = width >= 500 * headerScale
+        ? ["File", "Edit", "Selection", "View", "Go"]
+        : ["File", "Edit", "Selection"];
+    const dotsRightX = dotsStartX + 3 * dotSize + 2 * dotGap;
+    let menuX = dotsRightX + 8 * headerScale;
 
     ctx.save();
     ctx.font = `${menuFontSize}px "Inter", -apple-system, BlinkMacSystemFont, sans-serif`;
@@ -98,34 +100,6 @@ export function drawMacosGhostIdeMockup(context: MockupCanvasContext): MockupDra
         ctx.fillText(item, menuX + menuPaddingX, midY);
         menuX += ctx.measureText(item).width + menuPaddingX * 2;
     });
-    ctx.restore();
-
-    const searchWidth = Math.min(width * 0.4, 400 * headerScale);
-    const searchX = x + (width - searchWidth) / 2;
-    const searchY = y + (headerHeight - searchHeight) / 2;
-
-    ctx.save();
-    drawRoundedRectPath(ctx, searchX, searchY, searchWidth, searchHeight, 4 * headerScale);
-    ctx.fillStyle = hexToRgba(searchBgBase, headerOpacity);
-    ctx.fill();
-    ctx.strokeStyle = searchBorder;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.save();
-    ctx.font = `${searchFontSize}px "Inter", -apple-system, BlinkMacSystemFont, sans-serif`;
-    const displayUrl = url.substring(0, 30);
-    const textW = ctx.measureText(displayUrl).width;
-    const groupW = searchIconSize + searchGap + textW;
-    const groupStartX = searchX + (searchWidth - groupW) / 2;
-
-    drawMagnifyIcon(ctx, groupStartX, searchY + (searchHeight - searchIconSize) / 2, searchIconSize, textColor + "80");
-
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    ctx.fillText(displayUrl, groupStartX + searchIconSize + searchGap, searchY + searchHeight / 2);
     ctx.restore();
 
     const hamW = 14 * headerScale;
@@ -142,6 +116,53 @@ export function drawMacosGhostIdeMockup(context: MockupCanvasContext): MockupDra
     ctx.roundRect(hamX, hamY0 + hamGap * 2, hamW, hamH, hamH / 2);
     ctx.fill();
     ctx.restore();
+
+    const rightReservedX = x + width - (80 * headerScale);
+    const maxSearchWidth = Math.min(width * 0.45, 400 * headerScale);
+    const searchY = y + (headerHeight - searchHeight) / 2;
+
+    const minSearchX = menuX + 8 * headerScale;
+    const maxSearchRight = rightReservedX - 8 * headerScale;
+
+    let searchX = x + (width - maxSearchWidth) / 2;
+    let searchWidth = maxSearchWidth;
+
+    if (searchX < minSearchX) {
+        searchX = minSearchX;
+    }
+    if (searchX + searchWidth > maxSearchRight) {
+        searchWidth = Math.max(40 * headerScale, maxSearchRight - searchX);
+    }
+
+    if (searchWidth > 30 * headerScale) {
+        ctx.save();
+        drawRoundedRectPath(ctx, searchX, searchY, searchWidth, searchHeight, 4 * headerScale);
+        ctx.fillStyle = hexToRgba(searchBgBase, headerOpacity);
+        ctx.fill();
+        ctx.strokeStyle = searchBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        drawRoundedRectPath(ctx, searchX, searchY, searchWidth, searchHeight, 4 * headerScale);
+        ctx.clip();
+
+        ctx.font = `${searchFontSize}px "Inter", -apple-system, BlinkMacSystemFont, sans-serif`;
+        const displayUrl = url || "openvid";
+        const textW = ctx.measureText(displayUrl).width;
+        const groupW = searchIconSize + searchGap + textW;
+        const groupStartX = searchX + Math.max(8 * headerScale, (searchWidth - groupW) / 2);
+        const iconY = searchY + (searchHeight - searchIconSize) / 2;
+
+        drawMagnifyIcon(ctx, groupStartX, iconY, searchIconSize, textColor + "80");
+
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(displayUrl, groupStartX + searchIconSize + searchGap, searchY + searchHeight / 2);
+        ctx.restore();
+    }
 
     return {
         contentX: x,
