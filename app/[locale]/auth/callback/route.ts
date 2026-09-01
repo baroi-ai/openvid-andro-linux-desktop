@@ -2,6 +2,12 @@ import { createClient } from "@/utils/supabase/server";
 import { defaultLocale, locales, type Locale } from "@/i18n";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-static';
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
 function resolveLocale(requestUrl: URL, request: Request): Locale {
   const segments = requestUrl.pathname.split("/").filter(Boolean);
   const fromPath = segments[0];
@@ -32,6 +38,9 @@ function getSafeNextPath(next: string | null, locale: Locale): string {
 }
 
 export async function GET(request: Request) {
+  if (process.env.OUTPUT_MODE === "export" || process.env.NEXT_PUBLIC_EXPORT === "true") {
+    return new Response("Auth Callback", { status: 200 });
+  }
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const locale = resolveLocale(requestUrl, request);

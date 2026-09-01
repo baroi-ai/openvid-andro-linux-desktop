@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+
+export const dynamic = 'force-static';
 import { createAdminClient } from "@/utils/supabase/admin";
 import { resend } from "@/utils/resend/client";
 import DailyTipEmail from "@/components/emails/DailyTipEmail";
@@ -15,6 +17,9 @@ type EligibleUser = {
 };
 
 export async function POST(request: Request) {
+  if (process.env.OUTPUT_MODE === "export" || process.env.NEXT_PUBLIC_EXPORT === "true") {
+    return NextResponse.json({ ok: true });
+  }
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

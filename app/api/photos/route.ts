@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { env } from "@/app/config/env";
 
+export const dynamic = 'force-static';
+
 export interface UnifiedPhoto {
     id: string;
     urls: { regular: string; small: string };
@@ -189,6 +191,9 @@ async function getSearch(query: string, page: number, perPage: number): Promise<
 }
 
 export async function GET(request: Request) {
+    if (process.env.OUTPUT_MODE === "export" || process.env.NEXT_PUBLIC_EXPORT === "true") {
+        return NextResponse.json({ photos: [] });
+    }
     const { searchParams } = new URL(request.url);
     const mode = searchParams.get("mode") ?? "search";
     const query = searchParams.get("q") ?? "";

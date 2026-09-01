@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-static';
+
 export async function GET() {
   try {
     const res = await fetch("https://api.github.com/repos/CristianOlivera1/openvid", {

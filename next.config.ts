@@ -14,7 +14,10 @@ const securityHeaders = [
   },
 ];
 
+const isExport = process.env.NEXT_PUBLIC_EXPORT === "true" || process.env.OUTPUT_MODE === "export";
+
 const nextConfig: NextConfig = {
+  ...(isExport ? { output: "export" } : {}),
   poweredByHeader: false,
   compress: true,
   experimental: {
@@ -35,6 +38,7 @@ const nextConfig: NextConfig = {
     ],
   },
   images: {
+    unoptimized: isExport ? true : undefined,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
@@ -59,97 +63,101 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "static-cdn.jtvnw.net", pathname: "/**" },
     ],
   },
-  headers: async () => [
-    {
-      source: "/images/:path*",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=31536000, immutable",
-        },
-      ],
-    },
-    {
-      source: "/svg/:path*",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=31536000, immutable",
-        },
-      ],
-    },
-    {
-      source: "/ffmpeg/:path*",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=31536000, immutable",
-        },
-      ],
-    },
-    {
-      source: "/models/:path*",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=31536000, immutable",
-        },
-      ],
-    },
-    {
-      source: "/hdri/:path*",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=31536000, immutable",
-        },
-      ],
-    },
-    {
-      source: "/videos/:path*",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=86400, stale-while-revalidate=604800",
-        },
-      ],
-    },
-    {
-      source: "/site.webmanifest",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=86400, stale-while-revalidate=604800",
-        },
-      ],
-    },
-    {
-      source: "/:locale(en|es|ru|ko)",
-      headers: [
-        ...securityHeaders,
-        {
-          key: "Cache-Control",
-          value:
-            "public, s-maxage=300, stale-while-revalidate=86400",
-        },
-      ],
-    },
-    {
-      source: "/:locale(en|es|ru|ko)/:path*",
-      headers: [
-        ...securityHeaders,
-        {
-          key: "Cache-Control",
-          value:
-            "public, s-maxage=60, stale-while-revalidate=3600",
-        },
-      ],
-    },
-    {
-      source: "/(.*)",
-      headers: securityHeaders,
-    },
-  ],
+  ...(isExport
+    ? {}
+    : {
+        headers: async () => [
+          {
+            source: "/images/:path*",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=31536000, immutable",
+              },
+            ],
+          },
+          {
+            source: "/svg/:path*",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=31536000, immutable",
+              },
+            ],
+          },
+          {
+            source: "/ffmpeg/:path*",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=31536000, immutable",
+              },
+            ],
+          },
+          {
+            source: "/models/:path*",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=31536000, immutable",
+              },
+            ],
+          },
+          {
+            source: "/hdri/:path*",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=31536000, immutable",
+              },
+            ],
+          },
+          {
+            source: "/videos/:path*",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=86400, stale-while-revalidate=604800",
+              },
+            ],
+          },
+          {
+            source: "/site.webmanifest",
+            headers: [
+              {
+                key: "Cache-Control",
+                value: "public, max-age=86400, stale-while-revalidate=604800",
+              },
+            ],
+          },
+          {
+            source: "/:locale(en|es|ru|ko)",
+            headers: [
+              ...securityHeaders,
+              {
+                key: "Cache-Control",
+                value:
+                  "public, s-maxage=300, stale-while-revalidate=86400",
+              },
+            ],
+          },
+          {
+            source: "/:locale(en|es|ru|ko)/:path*",
+            headers: [
+              ...securityHeaders,
+              {
+                key: "Cache-Control",
+                value:
+                  "public, s-maxage=60, stale-while-revalidate=3600",
+              },
+            ],
+          },
+          {
+            source: "/(.*)",
+            headers: securityHeaders,
+          },
+        ],
+      }),
 };
 
 export default withNextIntl(nextConfig);

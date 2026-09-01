@@ -1,5 +1,7 @@
 import { locales, defaultLocale } from '@/i18n';
 
+export const dynamic = 'force-static';
+
 const BASE_URL = 'https://openvid.dev';
 
 const routes = [

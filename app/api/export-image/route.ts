@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 const FORMATS = {
   avif: { mime: "image/avif", ext: "avif" },
@@ -16,6 +16,9 @@ type ServerFormat = keyof typeof FORMATS;
 const MAX_INPUT_BYTES = 32 * 1024 * 1024;
 
 export async function POST(request: NextRequest) {
+  if (process.env.OUTPUT_MODE === "export" || process.env.NEXT_PUBLIC_EXPORT === "true") {
+    return NextResponse.json({ ok: true });
+  }
   let format: string | null = null;
   try {
     const formData = await request.formData();

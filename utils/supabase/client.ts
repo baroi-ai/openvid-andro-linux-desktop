@@ -15,5 +15,16 @@ const supabaseKey =
     ? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy"
     : rawKey;
 
-export const createClient = () =>
-  createBrowserClient(supabaseUrl, supabaseKey);
+export const createClient = () => {
+  if (typeof window === "undefined") {
+    return createBrowserClient(supabaseUrl, supabaseKey, {
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll() {},
+      },
+    });
+  }
+  return createBrowserClient(supabaseUrl, supabaseKey);
+};

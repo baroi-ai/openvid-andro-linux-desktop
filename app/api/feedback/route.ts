@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-static";
 
 const FEEDBACK_TYPES = ["bug", "idea", "other"] as const;
 type FeedbackType = (typeof FEEDBACK_TYPES)[number];
@@ -79,6 +80,9 @@ function isValidPayload(body: unknown): body is FeedbackPayload {
 }
 
 export async function POST(request: NextRequest) {
+  if (process.env.OUTPUT_MODE === "export" || process.env.NEXT_PUBLIC_EXPORT === "true") {
+    return NextResponse.json({ ok: true });
+  }
   try {
     if (!isAllowedOrigin(request)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

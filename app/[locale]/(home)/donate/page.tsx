@@ -37,10 +37,28 @@ export interface DonationMethod {
   link?: string;
 }
 
-export default async function DonatePage() {
+import { locales } from "@/i18n";
+import { setRequestLocale } from "next-intl/server";
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export default async function DonatePage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const t = await getTranslations("donation.page");
-  const headersList = await headers();
-  const country = headersList.get("x-user-country") || "UNKNOWN";
+  let country = "UNKNOWN";
+
+  if (process.env.OUTPUT_MODE !== "export" && process.env.NEXT_PUBLIC_EXPORT !== "true") {
+    try {
+      const headersList = await headers();
+      country = headersList.get("x-user-country") || "UNKNOWN";
+    } catch {
+      country = "UNKNOWN";
+    }
+  }
   
   const isPeru = country === "PE" || country === "UNKNOWN";
 
