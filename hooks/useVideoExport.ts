@@ -16,6 +16,52 @@ interface CancellationToken {
     cancelled: boolean;
 }
 
+type AccelMode = "prefer-hardware" | "prefer-software" | "no-preference";
+
+interface EncoderConfigResult {
+    fullCodecString: string;
+    hardwareAcceleration: AccelMode;
+}
+
+async function getBestSupportedVideoEncoderConfig(
+    width: number,
+    height: number,
+    fps: number,
+    bitrate: number
+): Promise<EncoderConfigResult> {
+    const codecsToTry = [
+        "avc1.42E01F",
+        "avc1.4D401F",
+        "avc1.64002A",
+        "avc1.640033",
+    ];
+    const accelsToTry: AccelMode[] = ["no-preference", "prefer-hardware", "prefer-software"];
+
+    if (typeof VideoEncoder !== "undefined" && typeof VideoEncoder.isConfigSupported === "function") {
+        for (const accel of accelsToTry) {
+            for (const codec of codecsToTry) {
+                try {
+                    const support = await VideoEncoder.isConfigSupported({
+                        codec,
+                        width,
+                        height,
+                        bitrate,
+                        framerate: fps,
+                        hardwareAcceleration: accel,
+                    });
+                    if (support.supported) {
+                        return { fullCodecString: codec, hardwareAcceleration: accel };
+                    }
+                } catch {
+                    // continue
+                }
+            }
+        }
+    }
+
+    return { fullCodecString: "avc1.42E01F", hardwareAcceleration: "no-preference" };
+}
+
 export function useVideoExport(
     videoRef: RefObject<HTMLVideoElement | null>,
     canvasRef: RefObject<VideoCanvasHandle | null>,
@@ -123,8 +169,8 @@ export function useVideoExport(
                 targetWidth = Math.round(qualitySettings.height * originalAspectRatio);
             }
 
-            targetWidth = Math.round(targetWidth / 2) * 2;
-            targetHeight = Math.round(targetHeight / 2) * 2;
+            targetWidth = Math.max(16, Math.round(targetWidth / 16) * 16);
+            targetHeight = Math.max(16, Math.round(targetHeight / 16) * 16);
 
             exportCanvas.width = targetWidth;
             exportCanvas.height = targetHeight;
@@ -156,7 +202,7 @@ export function useVideoExport(
             } else {
                 await exportWithMediabunnyAndAudio(
                     video, canvasHandle, exportCanvas, exportDuration, trimStart, fps,
-                    qualitySettings.bitrate, qualitySettings.width, qualitySettings.height,
+                    qualitySettings.bitrate, targetWidth, targetHeight,
                     setExportProgress, cancellationRef.current, settings
                 );
             }
@@ -257,6 +303,8 @@ async function exportWithMediabunny(
         target: target,
     });
 
+    const encoderConfig = await getBestSupportedVideoEncoderConfig(width, height, fps, bitrate);
+
     let videoSource: CanvasSource;
 
     try {
@@ -266,14 +314,14 @@ async function exportWithMediabunny(
             bitrateMode: "variable",
             latencyMode: "realtime",
             keyFrameInterval: fps * 2,
-            fullCodecString: "avc1.640033",
-            hardwareAcceleration: "prefer-hardware",
+            fullCodecString: encoderConfig.fullCodecString,
+            hardwareAcceleration: encoderConfig.hardwareAcceleration,
         });
         output.addVideoTrack(videoSource, { frameRate: fps });
 
         await output.start();
     } catch (error) {
-        console.warn("Hardware acceleration failure. Using software fallback.");
+        console.warn("Hardware acceleration failure. Using software fallback.", error);
 
         output = new Output({
             format: new Mp4OutputFormat({ fastStart: "in-memory" }),
@@ -286,7 +334,7 @@ async function exportWithMediabunny(
             bitrateMode: "variable",
             latencyMode: "realtime",
             keyFrameInterval: fps * 2,
-            fullCodecString: "avc1.640033",
+            fullCodecString: "avc1.42E01F",
             hardwareAcceleration: "prefer-software",
         });
         output.addVideoTrack(videoSource, { frameRate: fps });
@@ -450,6 +498,8 @@ async function exportWithMediabunnyAndAudio(
         target: new BufferTarget(),
     });
 
+    const encoderConfig = await getBestSupportedVideoEncoderConfig(width, height, fps, bitrate);
+
     let videoSource: CanvasSource;
 
     try {
@@ -459,8 +509,8 @@ async function exportWithMediabunnyAndAudio(
             bitrateMode: "variable",
             latencyMode: "realtime",
             keyFrameInterval: fps * 2,
-            fullCodecString: "avc1.640033",
-            hardwareAcceleration: "prefer-hardware",
+            fullCodecString: encoderConfig.fullCodecString,
+            hardwareAcceleration: encoderConfig.hardwareAcceleration,
         });
         output.addVideoTrack(videoSource, { frameRate: fps });
         await output.start();
@@ -475,7 +525,7 @@ async function exportWithMediabunnyAndAudio(
             bitrateMode: "variable",
             latencyMode: "realtime",
             keyFrameInterval: fps * 2,
-            fullCodecString: "avc1.640033",
+            fullCodecString: "avc1.42E01F",
             hardwareAcceleration: "prefer-software",
         });
         output.addVideoTrack(videoSource, { frameRate: fps });

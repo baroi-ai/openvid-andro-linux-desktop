@@ -41,12 +41,11 @@ import { TimelineSkeleton } from "@/app/components/ui/Skeleton";
 import { AudioTrimModal } from "@/app/components/ui/editor/AudioTrimModal";
 import { useMockup3dContext } from "@/app/contexts/Mockup3dContext";
 import { useAuth } from "@/app/contexts/useAuth";
-import { usePathname, useRouter } from "@/navigation";
 import { savePendingExport, readPendingExport, clearPendingExport } from "@/lib/pending-export";
 import Image from "next/image";
 import Link from "next/link";
 import { TooltipAction } from "@/components/ui/tooltip-action";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useCanvasElements } from "@/hooks/useCanvasElements";
 import { useEditorSelection } from "@/hooks/useEditorSelection";
 import { useImageExport } from "@/hooks/useImageExport";
@@ -1031,19 +1030,8 @@ export default function Editor() {
     }, [imageExportProgress.status]);
 
     const { user: authUser, loading: authLoading } = useAuth();
-    const locale = useLocale();
-    const pathname = usePathname();
-    const router = useRouter();
 
     const handleExport = useCallback((quality: ExportQuality) => {
-        if (!authUser) {
-            savePendingExport(quality);
-            router.replace({
-                pathname: "/login",
-                query: { redirectedFrom: `/${locale}${pathname}` },
-            });
-            return;
-        }
         isExportingRef.current = true;
         for (const audioEl of audioElementsRef.current.values()) {
             audioEl.pause();
@@ -1082,7 +1070,7 @@ export default function Editor() {
         }).finally(() => {
             isExportingRef.current = false;
         });
-    }, [videoBlob, selectedWallpaper, trimRange, muteOriginalAudio, videoHasAudioTrack, audioTracks, uploadedAudios, masterVolume, videoClips, globalSpeed, exportVideo, setIsPlaying, authUser, router, locale, pathname]);
+    }, [videoBlob, selectedWallpaper, trimRange, muteOriginalAudio, videoHasAudioTrack, audioTracks, uploadedAudios, masterVolume, videoClips, globalSpeed, exportVideo, setIsPlaying]);
 
     const handleExportRef = useRef(handleExport);
     useEffect(() => {

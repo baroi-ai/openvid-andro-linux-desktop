@@ -1,11 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const rawKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !serviceRoleKey) {
-  throw new Error("Missing Supabase service role environment variables");
-}
+const supabaseUrl =
+  !rawUrl || rawUrl === "x.y.z"
+    ? "https://placeholder-project.supabase.co"
+    : rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
+      ? rawUrl
+      : `https://${rawUrl}`;
+
+const serviceRoleKey =
+  !rawKey || rawKey === "x.y.z"
+    ? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy"
+    : rawKey;
 
 export const createAdminClient = () =>
   createClient(supabaseUrl, serviceRoleKey, {
